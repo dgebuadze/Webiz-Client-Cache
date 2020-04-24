@@ -9,10 +9,18 @@ const CACHE_FILES = [
     './'
 ];
 
+const CACHE_IGNORE_FILES = [
+    'favicon.ico'
+];
+
 const addToCache = (uri) => {
-    caches.open(OFFLINE_CACHE).then(function(cache) {
-        return cache.add(uri);
-    });
+
+    let filename = uri.replace(/^.*[\\\/]/, '');
+
+    if(!CACHE_IGNORE_FILES.includes(filename))
+        caches.open(OFFLINE_CACHE).then(function(cache) {
+            return cache.add(uri);
+        });
 };
 
 self.addEventListener('install', function(event) {
@@ -73,7 +81,7 @@ self.addEventListener('fetch', function(event) {
                 if (response)
                     return response;
 
-                addToCache(event.request); // add to cache list
+                addToCache(event.request.url); // add to cache list
 
                 return fetch(event.request).then(function(response) {
                     return response;
