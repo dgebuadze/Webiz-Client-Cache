@@ -1,14 +1,19 @@
 "use strict";
 
 const PREFIX = 'Webiz-Cache'; // Cache prefix
-const BUILD = '0a2b8s97d'; // Computed at build time.
+const BUILD = '0a2b8s97e'; // Computed at build time.
 const OFFLINE_CACHE = `${PREFIX}-${BUILD}`;
+
+// predefined list of files if available
 const CACHE_FILES = [
-    './',
-    'Webiz-Logo-1.svg',
-    'favicon.ico',
-    'testing.mp4'
+    './'
 ];
+
+let addToCache = (uri) => {
+    caches.open(OFFLINE_CACHE).then(function(cache) {
+        return cache.add(uri);
+    });
+};
 
 self.addEventListener('install', function(event) {
     self.skipWaiting();
@@ -44,7 +49,7 @@ self.addEventListener('fetch', function(event) {
                     return cache.match(event.request.url);
                 }).then(function(res) {
                 if (!res) {
-                    console.log('load from network');
+                    addToCache(event.request.url);
                     return fetch(event.request)
                         .then(res => {
                             return res.arrayBuffer();
@@ -65,6 +70,8 @@ self.addEventListener('fetch', function(event) {
             caches.match(event.request).then(function(response) {
                 if (response)
                     return response;
+
+                addToCache(event.request);
 
                 return fetch(event.request).then(function(response) {
                     return response;
