@@ -9,7 +9,7 @@ const CACHE_FILES = [
     './'
 ];
 
-let addToCache = (uri) => {
+const addToCache = (uri) => {
     caches.open(OFFLINE_CACHE).then(function(cache) {
         return cache.add(uri);
     });
@@ -17,11 +17,13 @@ let addToCache = (uri) => {
 
 self.addEventListener('install', function(event) {
     self.skipWaiting();
-    event.waitUntil(
-        caches.open(OFFLINE_CACHE).then(function(cache) {
-            return cache.addAll(CACHE_FILES);
-        })
-    );
+
+    if(OFFLINE_CACHE.length)
+        event.waitUntil(
+            caches.open(OFFLINE_CACHE).then(function(cache) {
+                return cache.addAll(CACHE_FILES);
+            })
+        );
 });
 
 self.addEventListener('activate', function(event) {
@@ -40,7 +42,7 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-    // for media
+    // for media (Partial content)
     if (event.request.headers.get('range')) {
         const position = parseInt(event.request.headers.get('range').split('bytes=')[1].split('-')[0]);
         event.respondWith(
@@ -49,7 +51,7 @@ self.addEventListener('fetch', function(event) {
                     return cache.match(event.request.url);
                 }).then(function(res) {
                 if (!res) {
-                    addToCache(event.request.url);
+                    addToCache(event.request.url); // add to cache list
                     return fetch(event.request)
                         .then(res => {
                             return res.arrayBuffer();
@@ -71,7 +73,7 @@ self.addEventListener('fetch', function(event) {
                 if (response)
                     return response;
 
-                addToCache(event.request);
+                addToCache(event.request); // add to cache list
 
                 return fetch(event.request).then(function(response) {
                     return response;
