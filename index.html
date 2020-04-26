@@ -5,36 +5,34 @@
 
 <body>
 <div>
-    <img src="Webiz-Logo-1.svg" style="width:100px;" />
+    <img src="Webiz-Logo-1.svg" style="width:100px;"/>
 </div>
-<br />
-<br />
+<br/>
+<br/>
 <div>
     <button onclick="cleanCaches()">Clean Caches</button>
 </div>
 <div style="margin-top:50px;">
-    <video autoplay="autoplay" muted controls="" style="width: 500px;">
+    <video controls="" style="width: 500px;">
         <source src="testing.mp4" type="video/mp4">
     </video>
 </div>
-
 <script>
     let cleanCaches = () => {
-        caches.keys().then(function(cacheNames) {
+        caches.keys().then(function (cacheNames) {
             return Promise.all(
-                cacheNames.map(function(cacheName) {
+                cacheNames.map(function (cacheName) {
                     return caches.delete(cacheName);
                 })
             );
         })
     };
-
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./serviceWorker.js', {
             scope: './'
-        }).then(() => new Promise(function(resolve, reject) {
+        }).then((new Promise(function (resolve, reject) {
             if (this.installing) {
-                this.installing.addEventListener('statechange', function(e) {
+                this.installing.addEventListener('statechange', function (e) {
                     if (e.target.state === 'installed') {
                         resolve();
                     } else if (e.target.state === 'redundant') {
@@ -44,7 +42,7 @@
             } else {
                 resolve();
             }
-        }));
+        })));
     }
 </script>
 </body>
